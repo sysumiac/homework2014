@@ -25,6 +25,7 @@
 	margin-top: 20px;
 	background: url(../images/toolbar-back-nologo.png);
 	opacity: 0.7;
+	overflow: hidden;
 }
 .icon {
 	width:35px;
