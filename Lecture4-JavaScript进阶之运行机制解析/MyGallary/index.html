@@ -3,9 +3,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="description" content="My Gallary">
-	<!-- <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">  -->
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"> 
 	<title>My Gallary</title>
 	<link rel="stylesheet" type="text/css" href="css/mygallery.css">
+	<link rel="stylesheet" type="text/css" href="css/showdiv.css">
+	<link rel="stylesheet" type="text/css" href="css/slider.css">
 </head>
 <body>
 	<!-- The container of this page -->
@@ -114,9 +116,40 @@
 				</div>			
 			</div>
 		</div>
+		
+		<div id="test"></div>
+		<style type="text/css">
+		#test {
+			width: 100px;
+			height: 100px;
+			background-color: #000;
+			opacity: 1;
+			position: absolute;
+			left: 100px;
+		}
+		</style>
+
 		<!-- The footer of this page -->
 		<div id="footer">
 			<p>Copyright &copy;by <a href="http://www.cnblogs.com/yuanzm">yuanzm</a></p>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/slider.js"></script>
+
+	<div id="photo-back" class="hide"></div>
+	<div id="photo" class="hide">
+		<img src="images/view7.jpg" alt="">
+	</div>
+	<div id="show-div" class="hide">
+		<div id="box">
+				<div class="button-set">
+				<div id="first" class="icon"></div>
+				<div id="preview" class="icon"></div>
+				<div id="start" class="icon"></div>
+				<div id="next" class="icon"></div>
+				<div id="last" class="icon"></div>
+				<div id="close-button" class="icon"></div>
+			</div>
 		</div>
 	</div>
 </body>
