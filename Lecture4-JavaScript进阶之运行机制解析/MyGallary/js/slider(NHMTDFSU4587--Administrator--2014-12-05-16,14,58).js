@@ -83,24 +83,21 @@
 		var nextAnimation = setTimeout(callback, durantion);
 	}
 	/*
-	 * 此函数实现图片的幻灯片的播放
-	 * @imgs: 需要进行幻灯片播放的图片，参数类型为类数组或者数组
-	 * @duration: 每一张图片显示或者消失需要的时间，参数类型为毫秒
-	 * @stayTime: 每一张图片停留的时间
-	 * @return: undefined
+	 *  
 	 */
-	function Slider(imgs, duration, stayTime, currentIndex){
+	function Slider(imgs, duration, frameDuration){
 		this.imgs = imgs;
 		this.duration = duration;
-		this.stayTime = stayTime;
-		this.currentIndex = currentIndex;
+		this.frameDuration = frameDuration;
+		this.currentIndex = 0;
+		this.nextIndex;
 	}
 
 	Slider.prototype = {
 		constructor: Slider,
 		init: function() {
 			this.setPicInitialOpacity();
-			var loop = setInterval(this.loopPic, (this.duration + this.stayTime), this);
+			var loop = setInterval(this.loopPic, 3000, this);
 		},
 		setPicInitialOpacity: function() {
 			for(var i = 0;i < this.imgs.length; i++) {
@@ -120,56 +117,12 @@
 		},
 		loopPic: function(that) {
 			var nextIndex = that.getNextPicIndex();
-			AnimationBaseTime(that.imgs[nextIndex], 'opacity', 60, 1, that.duration);
-			AnimationBaseTime(that.imgs[that.currentIndex], 'opacity', 60, 0, that.duration);
+			AnimationBaseTime(that.imgs[nextIndex], 'opacity', 60, 1, 3000);
+			AnimationBaseTime(that.imgs[that.currentIndex], 'opacity', 60, 0, 3000);
 			that.currentIndex = nextIndex;
 		}
 	}
-
-
-	function LoadSlider(images, num) {
-		this.images = images;
-	}
-	LoadSlider.prototype = {
-		constructor: LoadSlider,
-		init: function() {
-			this.loadPic();
-		},
-		loadPic: function() {
-			photoBack.className = '';
-			photo.className = '';
-			showDiv.className = '';
-			for(var i = 0;i < imgs.length;i++) {
-				photo.appendChild(imgs[i]);
-			}
-		}
-
-	}
-
-	//点击任意一张图片的时候加载遮罩层，显示当前的图片
-	function loadPic(imgs, num) {
-		var slider = new Slider(imgs, 3000, 1000, num);
-		slider.init();
-	}
-	
-	var imgs = document.getElementsByTagName('img'),
-		photoBack = document.getElementById('photo-back'),
-		photo = document.getElementById('photo'),
-		showDiv = document.getElementById('show-div');
-	var images = [];
-
-	window.onload = function() {
-		for(var i = 0;i < imgs.length;i++) {
-			var clonePic = imgs[i].cloneNode(true);
-			images.push(clonePic);
-		}
-		for(var i = 0; i < imgs.length;i++) {
-			imgs[i].addEventListener('click', function(num) {
-				return function() {
-					var loadSlider = new LoadSlider(images, num);
-					loadSlider.init();
-				}
-			}(i), false);
-		}
-	}
+	var imgs = document.getElementsByTagName('img');
+	var slider = new Slider(imgs, 3000, 3000);
+	slider.init();
 })()
