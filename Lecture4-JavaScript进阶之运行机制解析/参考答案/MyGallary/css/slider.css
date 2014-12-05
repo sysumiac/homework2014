@@ -33,6 +33,8 @@
 	position: absolute;
 	left: 0;
 	top: 0;
+	opacity: 1;
+	cursor: pointer;
 }
 
 #show-div {
@@ -74,7 +76,7 @@
 #first {
 	background-position: 420px 0;
 }
-#preview {
+#previous {
 	background-position: 369px 0;
 }
 #start {

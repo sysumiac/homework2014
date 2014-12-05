@@ -5,7 +5,44 @@
 ;(function () {
 	'use strict';
 
-	//用户获取元素的样式属性值
+	//声明一些变量	
+	var imgs = document.getElementsByTagName('img'),
+		photoBack = document.getElementById('photo-back'),
+		photo = document.getElementById('photo'),
+		showDiv = document.getElementById('show-div'),
+		first = document.getElementById('first'),
+		previous = document.getElementById('previous'),
+		start = document.getElementById('start'),
+		last = document.getElementById('last'),
+		next = document.getElementById('next'),
+		closeButton = document.getElementById('close-button'),
+		isLoadPic = false,
+		isStop = false;
+
+	var images = [];
+
+	window.onload = function() {
+		for(var i = 0;i < imgs.length;i++) {
+			var clonePic = imgs[i].cloneNode(true);
+			images.push(clonePic);
+		}
+		var loadSlider = new LoadSlider(images);
+		for(var i = 0; i < imgs.length;i++) {
+			imgs[i].addEventListener('click', function(num) {
+				return function() {
+					loadSlider.init(num);
+				}
+			}(i), false);
+		}
+	}
+
+
+	/*
+	 * 用于获取元素的样式属性值
+	 * @elem: 需要获取属性的元素
+	 * @attr: 需要获取的属性
+	 * @return：元素对应的属性
+	 */
 	function attrStyle(elem,attr){
 		if(elem.style[attr]){
 			//若样式存在于html中,优先获取
@@ -23,7 +60,6 @@
 			return null;
 		}
 	}
-
 	/* 
 	 * JavaScript的动画算法分成两种，一种是基于时间的，一种是基于帧的。本质都是在给定的时间内，每隔一段时间(帧)去执行某个函数。
 	 * 基于帧的JavaScript根据帧率去重绘画面，也就是如果帧率是60ms，那么每隔16.7ms就会重绘画面一次。
@@ -94,13 +130,14 @@
 		this.duration = duration;
 		this.stayTime = stayTime;
 		this.currentIndex = currentIndex;
+		this.loop = null;
 	}
 
 	Slider.prototype = {
 		constructor: Slider,
 		init: function() {
 			this.setPicInitialOpacity();
-			var loop = setInterval(this.loopPic, (this.duration + this.stayTime), this);
+			this.loop = setInterval(this.loopPic, (this.duration + this.stayTime), this);
 		},
 		setPicInitialOpacity: function() {
 			for(var i = 0;i < this.imgs.length; i++) {
@@ -123,53 +160,78 @@
 			AnimationBaseTime(that.imgs[nextIndex], 'opacity', 60, 1, that.duration);
 			AnimationBaseTime(that.imgs[that.currentIndex], 'opacity', 60, 0, that.duration);
 			that.currentIndex = nextIndex;
+		},
+		stop: function() {
+			clearInterval(this.loop);
 		}
 	}
 
 
-	function LoadSlider(images, num) {
+	function LoadSlider(images) {
 		this.images = images;
+		this.num = 0;
+		this.slider = new Slider(images, 3000, 1000, 0);
 	}
 	LoadSlider.prototype = {
 		constructor: LoadSlider,
-		init: function() {
-			this.loadPic();
+		init: function(num) {
+			this.num = num;
+			this.loadPic(num);
+			this.closeSlider();
+			this.start(this, num);
 		},
 		loadPic: function() {
 			photoBack.className = '';
 			photo.className = '';
 			showDiv.className = '';
-			for(var i = 0;i < imgs.length;i++) {
-				photo.appendChild(imgs[i]);
-			}
-		}
-
-	}
-
-	//点击任意一张图片的时候加载遮罩层，显示当前的图片
-	function loadPic(imgs, num) {
-		var slider = new Slider(imgs, 3000, 1000, num);
-		slider.init();
-	}
-	
-	var imgs = document.getElementsByTagName('img'),
-		photoBack = document.getElementById('photo-back'),
-		photo = document.getElementById('photo'),
-		showDiv = document.getElementById('show-div');
-	var images = [];
-
-	window.onload = function() {
-		for(var i = 0;i < imgs.length;i++) {
-			var clonePic = imgs[i].cloneNode(true);
-			images.push(clonePic);
-		}
-		for(var i = 0; i < imgs.length;i++) {
-			imgs[i].addEventListener('click', function(num) {
-				return function() {
-					var loadSlider = new LoadSlider(images, num);
-					loadSlider.init();
+			for(var i = 0;i < this.images.length;i++) {
+				if(i == this.num) {
+					this.images[i].style.opacity = 1;
+				} else {
+					this.images[i].style.opacity = 0;
 				}
-			}(i), false);
+			}
+			//如果关掉幻灯片后再次打开幻灯片，不需要重新加载图片
+			if (isLoadPic == false) {
+				for(var i = 0;i < this.images.length;i++) {
+					photo.appendChild(this.images[i]);
+					if (i == this.images.length - 1) {
+						isLoadPic = true;
+					}
+				}
+			}
+		},
+		closeSlider: function() {
+			var that = this;
+			photoBack.addEventListener('click',that.removeLoad , false);
+			closeButton.addEventListener('click', that.removeLoad, false);
+		},
+		removeLoad: function() {
+			photoBack.className = "hide";
+			photo.className = "hide";
+			showDiv.className = "hide";
+			this.slider.stop();
+			this.slider.currentIndex = 0;
+			start.className = start.className.replace('started stop',' ').trim();
+			isStop = false;
+		},
+		start: function(that) {
+			start.addEventListener('click', function() {
+				if(this.className.indexOf('started stop') > -1) {
+					that.stop();
+					start.className = start.className.replace('started stop',' ').trim();
+				} else {
+					if (isStop == false) {
+						that.slider.currentIndex = that.num;
+					}
+					that.slider.init();
+					start.className += ' started stop';
+				}
+			}, false);
+		},
+		stop: function() {
+			this.slider.stop();
+			isStop = true;
 		}
 	}
 })()
