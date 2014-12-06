@@ -97,7 +97,7 @@
 		constructor: Slider,
 		init: function() {
 			this.setPicInitialOpacity();
-			this.loopPic();		
+			var loop = setInterval(this.loopPic, 3000, this);
 		},
 		setPicInitialOpacity: function() {
 			for(var i = 0;i < this.imgs.length; i++) {
@@ -108,10 +108,6 @@
 				}
 			}
 		},
-		loopPic: function() {
-			var nextIndex = this.getNextPicIndex();
-			AnimationBaseTime(this.imgs[this.currentIndex], 'opacity', 60, 0, 3000);
-		},
 		getNextPicIndex: function() {
 			var nextIndex = this.currentIndex + 1;
 			if (nextIndex == this.imgs.length) {
@@ -119,16 +115,12 @@
 			}
 			return nextIndex;
 		},
-		fadeIn: function(obj, time, callback) {
-
-		},
-		fadeOut: function(obj, time, callback) {
-
-		},
-		fadeTo: function(obj, time, opacity, callback) {
-		},
-		stop: function() {
-
+		loopPic: function(that) {
+			console.log(that)
+			var nextIndex = that.getNextPicIndex();
+			AnimationBaseTime(that.imgs[that.currentIndex], 'opacity', 60, 0, 3000);
+			AnimationBaseTime(that.imgs[nextIndex], 'opacity', 60, 1, 3000);
+			that.currentIndex = nextIndex;
 		}
 	}
 	var imgs = document.getElementsByTagName('img');
