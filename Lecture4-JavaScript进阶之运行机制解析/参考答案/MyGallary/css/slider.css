@@ -16,16 +16,15 @@
 }
 #photo {
 	border: solid 5px #000;
-	width: 500px;
-	height: 300px;
+	width: 650px;
+	height: 400px;
 	position: fixed;
 	left: 50%;
-	margin-left: -250px;
+	margin-left: -325px;
 	top: 50%;
-	margin-top: -150px;
-	background-color: red;
+	margin-top: -250px;
+	background-color: #444;
 	z-index: 101;
-	/*position: relative;*/
 }
 #photo img {
 	width: 100%;
@@ -39,11 +38,11 @@
 
 #show-div {
 	width:400px;
-	height: 150px;
+	height: 100px;
 	text-align: center;
 	z-index: 102;
 	position: fixed;
-	bottom: 20px;
+	bottom: 70px;
 	left: 50%;
 	margin-left: -200px;
 }
@@ -96,5 +95,23 @@
 }
 #close-button {
 	background-position: 455px 0;
+}
+
+@media screen and (min-width: 550px) and (max-width: 979px) {
+	#photo {
+		width: 550px;
+		height: 300px;
+		left:50%;
+		margin-left: -275px;
+	}
+}
+
+@media screen and (max-width: 550px) {
+	#photo {
+		width: 80%;
+		height: 250px;
+		left:50%;
+		margin-left: -40%;
+	}
 }
 

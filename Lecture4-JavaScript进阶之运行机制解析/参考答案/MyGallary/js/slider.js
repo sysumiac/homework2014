@@ -17,7 +17,7 @@
 		next = document.getElementById('next'),
 		closeButton = document.getElementById('close-button'),
 		isLoadPic = false,
-		isStop = false;
+		isStop = false;  //判断幻灯片播放是否暂停
 
 	var images = [];
 
@@ -27,6 +27,7 @@
 			images.push(clonePic);
 		}
 		var loadSlider = new LoadSlider(images);
+		loadSlider.bindEvent(loadSlider);
 		for(var i = 0; i < imgs.length;i++) {
 			imgs[i].addEventListener('click', function(num) {
 				return function() {
@@ -166,7 +167,11 @@
 		}
 	}
 
-
+	/*
+	 * 点击页面上面的任意一张图片，显示遮罩层
+	 * @images: 需要播放的图片
+	 * @return: undefined
+	 */
 	function LoadSlider(images) {
 		this.images = images;
 		this.num = 0;
@@ -177,15 +182,37 @@
 		init: function(num) {
 			this.num = num;
 			this.loadPic(num);
-			this.closeSlider();
-			this.start(this, num);
 		},
-		loadPic: function() {
-			photoBack.className = '';
-			photo.className = '';
-			showDiv.className = '';
+		bindEvent: function() {
+			var that = this;
+			start.addEventListener('click', function() {
+				that.toggleSlider(that);
+			} , false);
+			next.addEventListener('click', function() {
+				that.nextPic(that);
+			}, false);
+			previous.addEventListener('click', function() {
+				that.previousPic(that);
+			},false);
+			last.addEventListener('click', function() {
+				that.lastPic(that);
+			}, false);
+			first.addEventListener('click', function() {
+				that.firstPic(that);
+			}, false);
+			photoBack.addEventListener('click',function() {
+				that.removeLoad(that);
+			} , false);
+			closeButton.addEventListener('click', function() {
+				that.removeLoad(that);
+			}, false);
+		},
+		loadPic: function(picIndex) {
+			photoBack.className = ' ';
+			photo.className = ' ';
+			showDiv.className = ' ';
 			for(var i = 0;i < this.images.length;i++) {
-				if(i == this.num) {
+				if(i == picIndex) {
 					this.images[i].style.opacity = 1;
 				} else {
 					this.images[i].style.opacity = 0;
@@ -201,37 +228,67 @@
 				}
 			}
 		},
-		closeSlider: function() {
-			var that = this;
-			photoBack.addEventListener('click',that.removeLoad , false);
-			closeButton.addEventListener('click', that.removeLoad, false);
-		},
-		removeLoad: function() {
+		removeLoad: function(that) {
 			photoBack.className = "hide";
 			photo.className = "hide";
 			showDiv.className = "hide";
-			this.slider.stop();
-			this.slider.currentIndex = 0;
-			start.className = start.className.replace('started stop',' ').trim();
+			that.slider.stop();
+			that.slider.currentIndex = 0;
+			start.removeEventListener()
+			start.className = start.className.replace('started',' ').replace('stop', ' ').trim();
 			isStop = false;
-		},
-		start: function(that) {
-			start.addEventListener('click', function() {
-				if(this.className.indexOf('started stop') > -1) {
-					that.stop();
-					start.className = start.className.replace('started stop',' ').trim();
-				} else {
-					if (isStop == false) {
-						that.slider.currentIndex = that.num;
-					}
-					that.slider.init();
-					start.className += ' started stop';
-				}
-			}, false);
 		},
 		stop: function() {
 			this.slider.stop();
 			isStop = true;
+		},
+		startSlider: function(that) {
+			if (isStop == false) {
+				that.slider.currentIndex = that.num;
+			}
+			start.className += ' started stop';
+			that.slider.init();
+		},
+		pauseSlider: function(that) {
+			that.stop();
+			start.className = start.className.replace('started',' ').replace('stop', ' ').trim();
+		},
+		toggleSlider: function(that) {
+			if(start.className.indexOf('started') == -1) {
+				that.startSlider(that)
+			} else {
+				that.pauseSlider(that);
+			}
+		},
+		nextPic: function(that) {
+			that.pauseSlider(that);
+			var currentPicIndex = that.slider.currentIndex + 1;
+			if (currentPicIndex == that.images.length - 1) {
+				currentPicIndex = 0;
+			}
+			that.loadPic(currentPicIndex);
+			that.slider.currentIndex = currentPicIndex;
+		},
+		previousPic: function(that) {
+			that.pauseSlider(that);
+			var currentPicIndex = that.slider.currentIndex - 1;
+			if (currentPicIndex == 0) {
+				currentPicIndex = that.images.length - 1;
+			}
+			that.loadPic(currentPicIndex);
+			that.slider.currentIndex = currentPicIndex;
+		},
+		lastPic: function(that) {
+			that.pauseSlider(that);
+			var currentPicIndex = that.images.length - 1;
+			that.slider.currentIndex = currentPicIndex;
+			that.loadPic(currentPicIndex);
+		},
+		firstPic: function(that) {
+			that.pauseSlider(that);
+			var currentPicIndex = 0;
+			that.slider.currentIndex = 0;
+			that.loadPic(currentPicIndex);
 		}
 	}
 })()
