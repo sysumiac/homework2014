@@ -1,5 +1,6 @@
 /*
  * Author: yuanzm
+ * Slider
  * Last-Edit-Date: 2014/12/5
  */
 ;(function () {
@@ -17,10 +18,10 @@
 		next = document.getElementById('next'),
 		closeButton = document.getElementById('close-button'),
 		isLoadPic = false,
-		isStop = false;  //判断幻灯片播放是否暂停
+		isStop = false,
+		images = [];
 
-	var images = [];
-
+	//页面加载完成的时候执行这段函数--slider应用的入口
 	window.onload = function() {
 		for(var i = 0;i < imgs.length;i++) {
 			var clonePic = imgs[i].cloneNode(true);
