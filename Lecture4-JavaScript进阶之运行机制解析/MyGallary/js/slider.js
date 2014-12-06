@@ -37,25 +37,24 @@
 	 * @durantion: 执行动画的时间
 	 * @return: undefined
 	 */
-	function AnimationBaseTime(obj, attr, fps, endAttr, durantion) {
-		var objAttr = attrStyle(obj, attr);
-		var startAttr = parseFloat(attrStyle(obj, attr));
-		var attrUnit = objAttr.replace(/\d+/g, ' ').trim();
-		console.log(attrUnit);
-		var current = new Date(); 
-		var previous = new Date();
-		var dt = 1000 / 60;
-		var totalAnimationFrame = durantion / dt;
-		var endAttr = parseFloat(endAttr); 
-		var perStepChange = (endAttr - startAttr) / totalAnimationFrame;
-		var acc = 0;
-		var param = 1;
-		var action = setInterval(loop, 1000 / fps);
-		var flag = 1;
+	function AnimationBaseTime(obj, attr, fps, endAttr, durantion, callback) {
+		var objAttr = attrStyle(obj, attr),
+			startAttr = parseFloat(attrStyle(obj, attr)),
+			// pattern = /[a-zA-Z]+/gi,
+			// attrUnit = pattern.test(objAttr)? String(attrStyle(obj, attr)).replace(/\d+/g, ' ').trim():'',
+			dt = 1000 / 60,
+			totalAnimationFrame = durantion / dt,
+			endAttr = parseFloat(endAttr),
+			perStepChange = (endAttr - startAttr) / totalAnimationFrame,
+			acc = 0,
+			current = new Date(),
+			previous = new Date(),
+			flag = 1;
 
 		if (startAttr > endAttr) {
 			flag = -1;
 		}
+
 		function loop() {
 			var current = new Date();
 			var passed = current - previous;
@@ -64,47 +63,61 @@
 			while(acc >= dt) {
 				update(dt);
 				acc -= dt;
-				paint();
 			}
+			paint();
 		}
 		function update(dt) {
 			startAttr += perStepChange;
-			if (flag == 1) {
-				if (startAttr - endAttr > 0) {
+			if (flag == 1 && (startAttr - endAttr > 0) ) {
 					clearInterval(action);
-				}
-			} else {
+			} else if(flag == -1 && (endAttr - startAttr > 0)){
 				if (endAttr - startAttr > 0) {
 					clearInterval(action);
 				}
 			}
 		}
 		function paint() {
-			obj.style[attr] = String(startAttr) + attrUnit;
+			obj.style[attr] = String(startAttr);
 		}
+		var action = setInterval(loop, 1000 / fps);
+		var nextAnimation = setTimeout(callback, durantion);
 	}
-	
-	var test = document.getElementById("test");
-	window.onload = function() {
-		AnimationBaseTime(test, 'marginLeft', 60, "400px", 8000);
-		AnimationBaseTime(test, 'opacity', 60, 0, 8000);
-	}
-
-	// console.log(attrStyle(test, 'marginLeft'))
-	function Slider(duration, frameDuration){
+	/*
+	 *  
+	 */
+	function Slider(imgs, duration, frameDuration){
+		this.imgs = imgs;
 		this.duration = duration;
 		this.frameDuration = frameDuration;
+		this.currentIndex = 0;
+		this.nextIndex;
 	}
+
 	Slider.prototype = {
 		constructor: Slider,
 		init: function() {
-			
+			this.setPicInitialOpacity();
+			this.loopPic();		
 		},
-		initAllPic: function() {
-
+		setPicInitialOpacity: function() {
+			for(var i = 0;i < this.imgs.length; i++) {
+				if(i == this.currentIndex) {
+					this.imgs[i].style.opacity = 1;
+				} else {
+					this.imgs[i].style.opacity = 0;
+				}
+			}
 		},
-		getNextPic: function() {
-
+		loopPic: function() {
+			var nextIndex = this.getNextPicIndex();
+			AnimationBaseTime(this.imgs[this.currentIndex], 'opacity', 60, 0, 3000);
+		},
+		getNextPicIndex: function() {
+			var nextIndex = this.currentIndex + 1;
+			if (nextIndex == this.imgs.length) {
+				nextIndex = 0
+			}
+			return nextIndex;
 		},
 		fadeIn: function(obj, time, callback) {
 
@@ -118,7 +131,7 @@
 
 		}
 	}
-	var img = document.getElementsByTagName('img');
-	var slider = new Slider(3000, 3000);
+	var imgs = document.getElementsByTagName('img');
+	var slider = new Slider(imgs, 3000, 3000);
 	slider.init();
 })()
