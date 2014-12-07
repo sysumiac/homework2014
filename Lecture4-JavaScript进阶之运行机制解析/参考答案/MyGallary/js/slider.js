@@ -1,6 +1,6 @@
 /*
  * Author: yuanzm
- * Slider
+ * Document Fcuntion: Slider
  * Last-Edit-Date: 2014/12/5
  */
 ;(function () {
@@ -207,6 +207,28 @@
 			closeButton.addEventListener('click', function() {
 				that.removeLoad(that);
 			}, false);
+			window.addEventListener('keydown', function(event) {
+				if (photo.className.indexOf('hide') == -1) {
+					if (event.which === 32){
+						that.toggleSlider(that);
+					}
+					if (event.which === 37) {
+						that.previousPic(that);
+					}
+					if (event.which === 38) {
+						that.firstPic(that);
+					}
+					if (event.which === 39) {
+						that.nextPic(that);
+					}
+					if (event.which === 40) {
+						that.lastPic(that);
+					}
+					if (event.which === 27) {
+						that.removeLoad(that);
+					}
+				}
+			}, false)
 		},
 		loadPic: function(picIndex) {
 			photoBack.className = ' ';
@@ -261,35 +283,37 @@
 				that.pauseSlider(that);
 			}
 		},
-		nextPic: function(that) {
-			that.pauseSlider(that);
-			var currentPicIndex = that.slider.currentIndex + 1;
-			if (currentPicIndex == that.images.length - 1) {
-				currentPicIndex = 0;
-			}
+		changePic: function(that, currentPicIndex) {
 			that.loadPic(currentPicIndex);
 			that.slider.currentIndex = currentPicIndex;
 		},
+		nextPic: function(that) {
+			that.pauseSlider(that);
+			var index = that.slider.currentIndex;
+			if (index == that.images.length - 1) {
+				index = 0;
+			}
+			var currentPicIndex = index + 1;
+			that.changePic(that, currentPicIndex);
+		},
 		previousPic: function(that) {
 			that.pauseSlider(that);
-			var currentPicIndex = that.slider.currentIndex - 1;
-			if (currentPicIndex == 0) {
-				currentPicIndex = that.images.length - 1;
+			var index = that.slider.currentIndex;
+			if (index == 0) {
+				index = that.images.length - 1;
 			}
-			that.loadPic(currentPicIndex);
-			that.slider.currentIndex = currentPicIndex;
+			var currentPicIndex = index - 1;
+			that.changePic(that, currentPicIndex);
 		},
 		lastPic: function(that) {
 			that.pauseSlider(that);
 			var currentPicIndex = that.images.length - 1;
-			that.slider.currentIndex = currentPicIndex;
-			that.loadPic(currentPicIndex);
+			that.changePic(that, currentPicIndex);
 		},
 		firstPic: function(that) {
 			that.pauseSlider(that);
 			var currentPicIndex = 0;
-			that.slider.currentIndex = 0;
-			that.loadPic(currentPicIndex);
+			that.changePic(that, currentPicIndex);
 		}
 	}
 })()
