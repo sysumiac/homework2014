@@ -1,7 +1,7 @@
 /*
  * Author: yuanzm
- * Document Fcuntion: Slider
- * Last-Edit-Date: 2014/12/5
+ * Document Function: Gallery Slider
+ * Last-Edit-Date: 2014/12/8
  */
 ;(function () {
 	'use strict';
@@ -17,7 +17,9 @@
 		last = document.getElementById('last'),
 		next = document.getElementById('next'),
 		closeButton = document.getElementById('close-button'),
+		//用户判断是否slider是否加载过需要播放的的图片
 		isLoadPic = false,
+		//用于判断播放是否暂停
 		isStop = false,
 		images = [];
 
@@ -28,6 +30,7 @@
 			images.push(clonePic);
 		}
 		var loadSlider = new LoadSlider(images);
+		//绑定事件处理程序只在最开始进行一次，避免出错的同时提高性能
 		loadSlider.bindEvent(loadSlider);
 		for(var i = 0; i < imgs.length;i++) {
 			imgs[i].addEventListener('click', function(num) {
@@ -37,7 +40,6 @@
 			}(i), false);
 		}
 	}
-
 
 	/*
 	 * 用于获取元素的样式属性值
@@ -108,10 +110,12 @@
 			startAttr += perStepChange;
 			if (flag == 1 && (startAttr - endAttr > 0) ) {
 					clearInterval(action);
+					startAttr = endAttr;
+					paint();
 			} else if(flag == -1 && (endAttr - startAttr > 0)){
-				if (endAttr - startAttr > 0) {
 					clearInterval(action);
-				}
+					startAttr = endAttr;
+					paint();
 			}
 		}
 		function paint() {
@@ -185,6 +189,7 @@
 			this.loadPic(num);
 		},
 		bindEvent: function() {
+			//绑定一系列事件处理程序，支持键盘操作
 			var that = this;
 			start.addEventListener('click', function() {
 				that.toggleSlider(that);
@@ -230,10 +235,8 @@
 				}
 			}, false)
 		},
-		loadPic: function(picIndex) {
-			photoBack.className = ' ';
-			photo.className = ' ';
-			showDiv.className = ' ';
+		setCurrentPic: function(picIndex) {
+			//显示需要显示的图片，隐藏所有不需要显示的图片
 			for(var i = 0;i < this.images.length;i++) {
 				if(i == picIndex) {
 					this.images[i].style.opacity = 1;
@@ -241,6 +244,12 @@
 					this.images[i].style.opacity = 0;
 				}
 			}
+		},
+		loadPic: function(picIndex) {
+			//点击图片的时候，将图片加载到需要显示相框里面
+			photoBack.className = ' ';
+			photo.className = ' ';
+			showDiv.className = ' ';
 			//如果关掉幻灯片后再次打开幻灯片，不需要重新加载图片
 			if (isLoadPic == false) {
 				for(var i = 0;i < this.images.length;i++) {
@@ -250,22 +259,25 @@
 					}
 				}
 			}
+			this.setCurrentPic(picIndex);
 		},
 		removeLoad: function(that) {
+			//点击遮罩层或者点击关闭控件，暂停播放幻灯片，关闭幻灯片
 			photoBack.className = "hide";
 			photo.className = "hide";
 			showDiv.className = "hide";
 			that.slider.stop();
 			that.slider.currentIndex = 0;
-			start.removeEventListener()
 			start.className = start.className.replace('started',' ').replace('stop', ' ').trim();
 			isStop = false;
 		},
 		stop: function() {
+			//停止播放幻灯片
 			this.slider.stop();
 			isStop = true;
 		},
 		startSlider: function(that) {
+			//开始播放幻灯片
 			if (isStop == false) {
 				that.slider.currentIndex = that.num;
 			}
@@ -273,10 +285,12 @@
 			that.slider.init();
 		},
 		pauseSlider: function(that) {
+			//暂停播放幻灯片
 			that.stop();
 			start.className = start.className.replace('started',' ').replace('stop', ' ').trim();
 		},
 		toggleSlider: function(that) {
+			//点击开始按钮，切换开始和暂停状态
 			if(start.className.indexOf('started') == -1) {
 				that.startSlider(that)
 			} else {
@@ -284,10 +298,12 @@
 			}
 		},
 		changePic: function(that, currentPicIndex) {
-			that.loadPic(currentPicIndex);
+			//更改当前显示的图片
+			that.setCurrentPic(currentPicIndex);
 			that.slider.currentIndex = currentPicIndex;
 		},
 		nextPic: function(that) {
+			//显示下一张图片
 			that.pauseSlider(that);
 			var index = that.slider.currentIndex;
 			if (index == that.images.length - 1) {
@@ -297,6 +313,7 @@
 			that.changePic(that, currentPicIndex);
 		},
 		previousPic: function(that) {
+			//显示上一张图片
 			that.pauseSlider(that);
 			var index = that.slider.currentIndex;
 			if (index == 0) {
@@ -306,11 +323,13 @@
 			that.changePic(that, currentPicIndex);
 		},
 		lastPic: function(that) {
+			//显示最后一张图片，需要注意的是，显示最后一张图片之后，还是能够点击下一张，也就是实现循环
 			that.pauseSlider(that);
 			var currentPicIndex = that.images.length - 1;
 			that.changePic(that, currentPicIndex);
 		},
 		firstPic: function(that) {
+			//显示第一张图片，需要注意的是，显示第一张图片之后，还是能够点击上一张，也就是实现循环
 			that.pauseSlider(that);
 			var currentPicIndex = 0;
 			that.changePic(that, currentPicIndex);

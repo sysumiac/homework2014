@@ -109,9 +109,10 @@
 @media screen and (max-width: 550px) {
 	#photo {
 		width: 80%;
-		height: 250px;
+		height: 150px;
 		left:50%;
 		margin-left: -40%;
+		margin-top: -100px;
 	}
 }
 
